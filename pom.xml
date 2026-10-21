@@ -35,6 +35,12 @@
     <maven-checkstyle.version>3.6.0</maven-checkstyle.version>
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.47</spring-format.version>
+
+    <!-- QA (INF-433): Selenium WebDriver and tag filtering for the UI suite.
+      By default the "selenium" tag is excluded so a plain "mvn test" does not need a browser.
+      Jenkins runs the UI suite with: -Dtest=OwnerFlowSeleniumTest -Dexcluded.groups=none -->
+    <selenium.version>4.51.0</selenium.version>
+    <excluded.groups>selenium</excluded.groups>
   </properties>
 
   <dependencies>
@@ -178,10 +184,25 @@
       <artifactId>testcontainers-mysql</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- QA (INF-433): browser automation for the UI test suite -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludedGroups>${excluded.groups}</excludedGroups>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
